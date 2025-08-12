@@ -5,7 +5,7 @@
 
 Randall RN, Radford CE, Roof KA, Natarajan DK, Gaucher EA. 
 An experimental phylogeny to benchmark ancestral sequence reconstruction.
-Nature Communications 2016 Sep 15;7:12847.
+_Nature Communications_ 2016 Sep 15;7:12847.
 https://pubmed.ncbi.nlm.nih.gov/27628687/
 
 The main functions made available are 
@@ -14,13 +14,13 @@ The main functions made available are
 
 Prabhav Kalaghatgi.
 Phylogeny inference under the general Markov model using MST-backbone.
-bioRxiv 2020.06.30.180315.
+_bioRxiv_ 2020.06.30.180315.
 https://doi.org/10.1101/2020.06.30.180315
 
 2. Given a GMM defined on a topology rooted at some node, start EM at alternate internal nodes of topology using reparameterized GMM. Methodology is described in the following paper 
 
 Steel MA, Székely LA, Hendy MD. Reconstructing trees when sequence sites evolve at variable rates.
-J Comput Biol. 1994 Summer;1(2):153-63.
+_Journal of Computational Biology_ 1994 Summer;1(2):153-63.
 https://pubmed.ncbi.nlm.nih.gov/8790461/
 
 3. Generate flower plots visualizing change in log likelihood score, with each petal representing GMM's root location:
