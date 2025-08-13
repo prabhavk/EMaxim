@@ -10,14 +10,14 @@ https://pubmed.ncbi.nlm.nih.gov/27628687/
 
 The main functions made available are 
 
-1. Expectation-Maximization (EM) for the Barry-Hartigan model (GMM) using a fixed topology. Methodology is described in the following preprint.
+1. Expectation-Maximization (EM) for the Barry-Hartigan model (GMM) using a fixed topology. Methodology is described in the preprint.
 
 Prabhav Kalaghatgi.
 Phylogeny inference under the general Markov model using MST-backbone.
 _bioRxiv_ 2020.06.30.180315.
 https://doi.org/10.1101/2020.06.30.180315
 
-2. Given a GMM defined on a topology rooted at some node, start EM at alternate internal nodes of topology using reparameterized GMM. Methodology is described in the following paper 
+2. Given a GMM defined on a topology rooted at some node, start EM at alternate internal nodes of topology using reparameterized GMM. Methodology is described in the paper 
 
 Steel MA, Székely LA, Hendy MD. Reconstructing trees when sequence sites evolve at variable rates.
 _Journal of Computational Biology_ 1994 Summer;1(2):153-63.
