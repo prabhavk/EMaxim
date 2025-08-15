@@ -32,11 +32,11 @@ int ll_precision = 10;
 inline random_device rd;
 inline mt19937_64 gen(rd());
 
-inline array <float, 4> sample_dirichlet(const array<float, 4>& alpha, mt19937_64& gen) {
-    array <float, 4> x;
-    float sum = 0.0;
+inline array <double, 4> sample_dirichlet(const array<double, 4>& alpha, mt19937_64& gen) {
+    array <double, 4> x;
+    double sum = 0.0;
     for (size_t i = 0; i < 4; ++i) {
-        gamma_distribution<float> gamma(alpha[i], 1.0);
+        gamma_distribution<double> gamma(alpha[i], 1.0);
         x[i] = gamma(gen);
         sum += x[i];
     }
@@ -44,16 +44,16 @@ inline array <float, 4> sample_dirichlet(const array<float, 4>& alpha, mt19937_6
     return x;
 }
 
-array <float, 4> D_pi = {140, 140, 140, 140};
-array <float, 4> D_M_row = {1986, 27, 27, 27};
+array <double, 4> D_pi = {140, 140, 140, 140};
+array <double, 4> D_M_row = {1986, 27, 27, 27};
 
-inline array <float, 4> sample_pi() {
-	array <float, 4> pi = sample_dirichlet(D_pi,gen);
+inline array <double, 4> sample_pi() {
+	array <double, 4> pi = sample_dirichlet(D_pi,gen);
 	return (pi);
 }
 
-inline array <float, 4> sample_M_row() {
-	array <float, 4> pi = sample_dirichlet(D_M_row,gen);
+inline array <double, 4> sample_M_row() {
+	array <double, 4> pi = sample_dirichlet(D_M_row,gen);
 	return (pi);
 }
 
@@ -102,15 +102,15 @@ inline Md MM(const Md &A, const Md &B) {
 ///...///...///...///...///...///...///... struct for prim ...///...///...///...///...///...///...///
 struct prim_graph {
     int n;
-    vector<float> W;    
+    vector<double> W;    
     
-    prim_graph(int n_, const pair<int,int>* edges, const float* weights, int m) : n(n_), W(size_t(n_) * size_t(n_), numeric_limits<float>::infinity()) {        
+    prim_graph(int n_, const pair<int,int>* edges, const double* weights, int m) : n(n_), W(size_t(n_) * size_t(n_), numeric_limits<double>::infinity()) {        
         for (int i = 0; i < n; ++i) W[size_t(i)*n + i] = 0.0f;
         
         for (int k = 0; k < m; ++k) {
             int u = edges[k].first;
             int v = edges[k].second;
-            float w = weights[k];
+            double w = weights[k];
             if (!(0 <= u && u < n && 0 <= v && v < n)) {
                 throw mt_error("check input for prim's algorithm");			
             }
@@ -121,14 +121,14 @@ struct prim_graph {
 
     int num_vertices() const { return n; }
     
-    float weight(int u, int v) const { return W[size_t(u)*n + v]; }
+    double weight(int u, int v) const { return W[size_t(u)*n + v]; }
 };
 
 inline void prim(const prim_graph& g, int* parent_out) {
     const int n = g.num_vertices();
     
-    const float INF = numeric_limits<float>::infinity();
-    vector<float> key(n, INF);
+    const double INF = numeric_limits<double>::infinity();
+    vector<double> key(n, INF);
     vector<char>  inMST(n, 0);
 
     // root = 0
@@ -137,7 +137,7 @@ inline void prim(const prim_graph& g, int* parent_out) {
 
     for (int it = 0; it < n; ++it) {
         int u = -1;
-        float best = INF;
+        double best = INF;
         for (int v = 0; v < n; ++v) {
             if (!inMST[v] && key[v] < best) {
                 best = key[v];
@@ -149,7 +149,7 @@ inline void prim(const prim_graph& g, int* parent_out) {
         
         for (int v = 0; v < n; ++v) {
             if (inMST[v] || v == u) continue;
-            float w = g.weight(u, v);
+            double w = g.weight(u, v);
             if (w < key[v]) {
                 key[v] = w;
                 parent_out[v] = u;
@@ -254,7 +254,7 @@ public:
 	void ComputeMST();
 	void CLGrouping();		
 	void ResetSubtreeSizeThreshold();	
-	void DoubleSubtreeSizeThreshold();
+	void doubleSubtreeSizeThreshold();
 	int ComputeHammingDistance(vector <unsigned char> recodedSeq1, vector <unsigned char> recodedSeq2);
 	pair <vector <int>, vector <int>> GetIdsForSubtreeVerticesAndExternalVertices();
 	pair <bool, MST_vertex *> GetPtrToVertexSubtendingSubtree();
@@ -378,7 +378,7 @@ void MST::ResetSubtreeSizeThreshold() {
 	this->numberOfLargeEdgesThreshold = this->numberOfLargeEdgesThreshold_input;
 }
 
-void MST::DoubleSubtreeSizeThreshold() {
+void MST::doubleSubtreeSizeThreshold() {
 	this->numberOfLargeEdgesThreshold = this->numberOfLargeEdgesThreshold * 2;
 }
 int MST::ComputeHammingDistance(vector<unsigned char> recodedSeq1, vector<unsigned char> recodedSeq2) {	
@@ -627,8 +627,8 @@ void MST::UpdateMSTWithOneExternalVertex(vector<int> idsOfVerticesToRemove, stri
 	int numberOfVertices = int(this->vertexMap->size());	
 	const int numberOfEdges = int(this->edgeWeightsMap.size());
 	
-	float * weights;
-	weights = new float [numberOfEdges];
+	double * weights;
+	weights = new double [numberOfEdges];
 	
 	typedef pair <int,int > E;
 	E * edges;
@@ -764,8 +764,8 @@ void MST::UpdateMSTWithMultipleExternalVertices(vector<int> idsOfVerticesToKeep,
 	int numberOfVertices = int(this->vertexMap->size());	
 
 	const int numberOfEdges = int(this->edgeWeightsMap.size());
-	float * weights;
-	weights = new float [numberOfEdges];
+	double * weights;
+	weights = new double [numberOfEdges];
 	
 	typedef pair <int,int > E;
 	E * edges;
@@ -1016,8 +1016,8 @@ void MST::ReadFasta(string sequenceFileNameToSet) {
 	inputFile.close();
     cout << "Number of sequences in fasta file is " << this->vertexMap->size() << endl;
     cout << "Sequence length is " << seq_len << endl;
-	// cout << "Number of ambiguous characters is " << float(num_amb) << "\tNumber of nonambiguous characters is " << float(num_non_amb) << endl;
-	// cout << "Fraction of ambiguous characters is " << float(num_amb)/float(num_amb + num_non_amb) << endl;
+	// cout << "Number of ambiguous characters is " << double(num_amb) << "\tNumber of nonambiguous characters is " << double(num_non_amb) << endl;
+	// cout << "Fraction of ambiguous characters is " << double(num_amb)/double(num_amb + num_non_amb) << endl;
 }
 
 vector<unsigned char> MST::DecompressSequence(vector<unsigned char>* compressedSequence, vector<vector<int>>* sitePatternRepeats){
@@ -1054,8 +1054,8 @@ void MST::ComputeMST() {
 	int numberOfVertices = (this->v_ind);		
 	const int numberOfEdges = numberOfVertices*(numberOfVertices-1)/2;		
 	
-	float * weights;
-	weights = new float [numberOfEdges];
+	double * weights;
+	weights = new double [numberOfEdges];
 		
 	int edgeIndex = 0;
 	for (int i=0; i<numberOfVertices; i++) {
@@ -1114,14 +1114,14 @@ public:
 	int global_id = -42;
 	string newickLabel = "";
 	string name = "";
-	float logScalingFactors = 0;
-	float vertexLogLikelihood = 0;
-	float sumOfEdgeLogLikelihoods = 0;
+	double logScalingFactors = 0;
+	double vertexLogLikelihood = 0;
+	double sumOfEdgeLogLikelihoods = 0;
 	int rateCategory = 0;
 	int GCContent = 0;
 	vector <SEM_vertex *> neighbors;
 	vector <SEM_vertex *> children;
-	array <float, 4> root_prob_hss;
+	array <double, 4> root_prob_hss;
 	SEM_vertex * parent = this;
 	void AddNeighbor(SEM_vertex * v_ptr);
 	void RemoveNeighbor(SEM_vertex * v_ptr);
@@ -1129,13 +1129,13 @@ public:
 	void RemoveParent();
 	void AddChild(SEM_vertex * v_ptr);
 	void RemoveChild(SEM_vertex * v_ptr);
-	void SetVertexLogLikelihood(float vertexLogLikelihoodToSet);
+	void SetVertexLogLikelihood(double vertexLogLikelihoodToSet);
 	int inDegree = 0;
 	int outDegree = 0;
 	Md transitionMatrix;
 	Md transitionMatrix_stored;	
-	array <float, 4> rootProbability;
-	array <float, 4> posteriorProbability;	
+	array <double, 4> rootProbability;
+	array <double, 4> posteriorProbability;	
 	SEM_vertex (int idToAdd, vector <unsigned char> compressedSequenceToAdd) {
 		this->id = idToAdd;
 		this->compressedSequence = compressedSequenceToAdd;
@@ -1156,7 +1156,7 @@ public:
 	}
 };
 
-void SEM_vertex::SetVertexLogLikelihood(float vertexLogLikelihoodToSet) {
+void SEM_vertex::SetVertexLogLikelihood(double vertexLogLikelihoodToSet) {
 	this->vertexLogLikelihood = vertexLogLikelihoodToSet;
 }
 
@@ -1196,9 +1196,9 @@ void SEM_vertex::RemoveNeighbor(SEM_vertex * v) {
 
 class clique {
 	public:	
-	map <clique *, float> logScalingFactorForMessages;
-	float logScalingFactorForClique;
-	map <clique *, std::array <float, 4>> messagesFromNeighbors;
+	map <clique *, double> logScalingFactorForMessages;
+	double logScalingFactorForClique;
+	map <clique *, std::array <double, 4>> messagesFromNeighbors;
     vector <unsigned char> compressedSequence;
 	string name;
 	int id;
@@ -1212,7 +1212,7 @@ class clique {
 	void ComputeBelief();
 	SEM_vertex * x;
 	SEM_vertex * y;
-	std::array <float, 4> MarginalizeOverVariable(SEM_vertex * v);
+	std::array <double, 4> MarginalizeOverVariable(SEM_vertex * v);
 //	Md DivideBeliefByMessageMarginalizedOverVariable(SEM_vertex * v);	
 	// Clique is defined over the vertex pair (X,Y)
 	// No of variables is always 2 for bifurcating tree-structured DAGs
@@ -1241,8 +1241,8 @@ class clique {
 
 
 
-std::array <float, 4> clique::MarginalizeOverVariable(SEM_vertex * v) {
-	std::array <float, 4> message;	
+std::array <double, 4> clique::MarginalizeOverVariable(SEM_vertex * v) {
+	std::array <double, 4> message;	
 	if (this->x == v) {
 		for (int dna_y = 0; dna_y < 4; dna_y ++) {
 			message[dna_y] = 0;
@@ -1266,7 +1266,7 @@ std::array <float, 4> clique::MarginalizeOverVariable(SEM_vertex * v) {
 void clique::ComputeBelief() {
 	Md factor = this->initialPotential;
 	vector <clique *> neighbors = this->children;
-	std::array <float, 4> messageFromNeighbor;
+	std::array <double, 4> messageFromNeighbor;
 	bool debug = 0;		
 	if (this->parent != this) {
 		neighbors.push_back(this->parent);
@@ -1299,7 +1299,7 @@ void clique::ComputeBelief() {
             throw mt_error("check product step");
 		}
 	}	
-	float scalingFactor = 0;
+	double scalingFactor = 0;
 	for (int dna_x = 0 ; dna_x < 4; dna_x ++) {
 		for (int dna_y = 0 ; dna_y < 4; dna_y ++) {
 			scalingFactor += factor[dna_x][dna_y];
@@ -1373,7 +1373,7 @@ void clique::SetInitialPotentialAndBelief(int site) {
 			}
 		}
 	}
-	float maxValue = 0;
+	double maxValue = 0;
 	for (int i = 0; i < 4; i ++) {
 		for (int j = 0; j < 4; j ++) {
 			if (this->initialPotential[i][j] > maxValue) {
@@ -1532,7 +1532,7 @@ Md cliqueTree::GetP_XZ(SEM_vertex * X, SEM_vertex * Y, SEM_vertex * Z) {
 //	cout << "P_XY is " << endl << P_XY << endl;
 //	cout << "P_YZ is " << endl << P_YZ << endl;
 	P_ZGivenY = Md{};
-	float rowSum;
+	double rowSum;
 	for (int row = 0; row < 4; row ++) {		
 		rowSum = 0;
 		for (int col = 0; col < 4; col ++) {
@@ -1775,10 +1775,10 @@ void cliqueTree::SetLeaves() {
 
 
 void cliqueTree::SendMessage(clique * C_from, clique * C_to) {		
-	float logScalingFactor;
-	float largestElement;	
-	array <float, 4> messageFromNeighbor;
-	array <float, 4> messageToNeighbor;
+	double logScalingFactor;
+	double largestElement;	
+	array <double, 4> messageFromNeighbor;
+	array <double, 4> messageToNeighbor;
 	bool verbose = 0;
 	if (verbose) {
 		cout << "Preparing message to send from " << C_from->name << " to " ;
@@ -1959,8 +1959,8 @@ public:
 	int numberOfSitePatterns;
 	int maxIter;
 	double logLikelihoodConvergenceThreshold = 0.1;	
-	float sumOfExpectedLogLikelihoods = 0;
-	float maxSumOfExpectedLogLikelihoods = 0;
+	double sumOfExpectedLogLikelihoods = 0;
+	double maxSumOfExpectedLogLikelihoods = 0;
 	int h_ind = 1;
 	chrono::system_clock::time_point t_start_time;
 	chrono::system_clock::time_point t_end_time;
@@ -1970,19 +1970,19 @@ public:
 	vector < pair <SEM_vertex *, SEM_vertex *>> edgesForPreOrderTreeTraversal;	
 	vector < pair <SEM_vertex *, SEM_vertex *>> edgesForChowLiuTree;
 	vector < pair <SEM_vertex *, SEM_vertex *>> directedEdgeList;
-	map <pair <SEM_vertex *, SEM_vertex *>, float> edgeLengths;
+	map <pair <SEM_vertex *, SEM_vertex *>, double> edgeLengths;
 	vector < SEM_vertex *> leaves;
 	vector < SEM_vertex *> preOrderVerticesWithoutLeaves;
 	map < pair <SEM_vertex * , SEM_vertex *>, Md > expectedCountsForVertexPair;
 	map < pair <SEM_vertex * , SEM_vertex *>, Md > posteriorProbabilityForVertexPair;
-	map < SEM_vertex *, array <float,4>> expectedCountsForVertex; 
-	map < SEM_vertex *, array <float,4>> posteriorProbabilityForVertex;
+	map < SEM_vertex *, array <double,4>> expectedCountsForVertex; 
+	map < SEM_vertex *, array <double,4>> posteriorProbabilityForVertex;
 	map <int, Md> rateMatrixPerRateCategory;
 	map <int, Md> rateMatrixPerRateCategory_stored;
-	map <int, float> scalingFactorPerRateCategory;
-	map <int, float> scalingFactorPerRateCategory_stored;
+	map <int, double> scalingFactorPerRateCategory;
+	map <int, double> scalingFactorPerRateCategory_stored;
 	int numberOfRateCategories = 0;
-	float maximumLogLikelihood;
+	double maximumLogLikelihood;
 	Md I4by4;	
 	cliqueTree * cliqueT;
 	bool debug;
@@ -2001,10 +2001,10 @@ public:
 	string probabilityFileName_diri;
 	string prefix_for_output_files;
 	string ancestralSequencesString = "";
-	float sequenceLength;
+	double sequenceLength;
 	// Add vertices (and compressed sequence for leaves)
-	array <float, 4> rootProbability;
-	array <float, 4> rootProbability_stored;
+	array <double, 4> rootProbability;
+	array <double, 4> rootProbability_stored;
 	SEM_vertex * root_stored;
 	vector <unsigned char> compressedSequenceToAddToMST;
 	string nameOfSequenceToAddToMST;
@@ -2026,10 +2026,10 @@ public:
 	vector < pair < vector <unsigned char>, vector <unsigned char> > > edgesOfInterest_seq;
 	string weightedEdgeListString;
 	map < string, vector <unsigned char>> sequencesToAddToGlobalPhylogeneticTree;
-	vector < tuple <string, string, float>> weightedEdgesToAddToGlobalPhylogeneticTree;
-	vector < tuple <string, string, float>> edgeLogLikelihoodsToAddToGlobalPhylogeneticTree;		
-	map <string, float> vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree;
-	map <pair<SEM_vertex *,SEM_vertex *>,float> edgeLogLikelihoodsMap;
+	vector < tuple <string, string, double>> weightedEdgesToAddToGlobalPhylogeneticTree;
+	vector < tuple <string, string, double>> edgeLogLikelihoodsToAddToGlobalPhylogeneticTree;		
+	map <string, double> vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree;
+	map <pair<SEM_vertex *,SEM_vertex *>,double> edgeLogLikelihoodsMap;
 	SEM_vertex * externalVertex;
 	void AddArc(SEM_vertex * from, SEM_vertex * to);
 	void RemoveArc(SEM_vertex * from, SEM_vertex * to);
@@ -2038,10 +2038,10 @@ public:
 	void ClearUndirectedEdges();
 	void ClearAllEdges();
 	void AddVertex(string name, vector <unsigned char> compressedSequenceToAdd);
-	void AddWeightedEdges(vector<tuple<string,string,float>> weightedEdgesToAdd);
-	void AddEdgeLogLikelihoods(vector<tuple<string,string,float>> edgeLogLikelihoodsToAdd);
+	void AddWeightedEdges(vector<tuple<string,string,double>> weightedEdgesToAdd);
+	void AddEdgeLogLikelihoods(vector<tuple<string,string,double>> edgeLogLikelihoodsToAdd);
 	void AddExpectedCountMatrices(map < pair <SEM_vertex * , SEM_vertex *>, Md > expectedCountsForVertexPair);
-	void AddVertexLogLikelihoods(map <string,float> vertexLogLikelihoodsMapToAdd);
+	void AddVertexLogLikelihoods(map <string,double> vertexLogLikelihoodsMapToAdd);
 	void SetNumberOfVerticesInSubtree(int numberOfVertices);	
 	void AddSitePatternWeights(vector <int> sitePatternWeightsToAdd);
 	void AddSitePatternRepeats(vector <vector <int> > sitePatternRepetitionsToAdd);
@@ -2056,7 +2056,7 @@ public:
 	// void ComputeNJTreeUsingHammingDistances(); 
 	void ComputeNJTree_may_contain_uninitialized_values(); // Hamming (default) or LogDet distance
 	void ComputeNJTree();
-	float ComputeDistance(int v_i, int v_j);
+	double ComputeDistance(int v_i, int v_j);
 	void RootedTreeAlongAnEdgeIncidentToCentralVertex();
 	void RootTreeAlongAnEdgePickedAtRandom();
 	void RootTreeAtAVertexPickedAtRandom();
@@ -2093,10 +2093,10 @@ public:
 	void ClearAncestralSequences();
 	void WriteParametersOfGMM(string GMMparametersFileName);
 	void RemoveEdgeLength(SEM_vertex * u, SEM_vertex * v);
-	void AddEdgeLength(SEM_vertex * u, SEM_vertex * v, float t);
-	float GetEdgeLength(SEM_vertex * u, SEM_vertex * v);
-	float ComputeEdgeLength(SEM_vertex * u, SEM_vertex * v);
-	void SetEdgeLength(SEM_vertex * u, SEM_vertex * v, float t);
+	void AddEdgeLength(SEM_vertex * u, SEM_vertex * v, double t);
+	double GetEdgeLength(SEM_vertex * u, SEM_vertex * v);
+	double ComputeEdgeLength(SEM_vertex * u, SEM_vertex * v);
+	void SetEdgeLength(SEM_vertex * u, SEM_vertex * v, double t);
 	void SetEdgesFromTopologyFile();
 	string EncodeAsDNA(vector<unsigned char> sequence);
 	vector<unsigned char> DecompressSequence(vector<unsigned char>* compressedSequence, vector<vector<int>>* sitePatternRepeats);	
@@ -2106,7 +2106,7 @@ public:
 	void SetGMMparameters();
 	void ReparameterizeGMM();
 	void Set_pi_for_neighbors_of_root();
-	array<float,4> get_pi_child();
+	array<double,4> get_pi_child();
 	void ReadProbabilities();
 	void WriteProbabilities(string fileName);
 	void ReadTransitionProbabilities(string fileName);
@@ -2116,8 +2116,8 @@ public:
 	int GetEdgeIndex (int vertexIndex1, int vertexIndex2, int numberOfVertices);
 	Md GetP_yGivenx(Md P_xy);
 	Md GetTransitionMatrix(SEM_vertex * p, SEM_vertex * c);
-	array <float, 4> GetBaseComposition(SEM_vertex * v);
-	array <float, 4> GetObservedCountsForVariable(SEM_vertex * v);
+	array <double, 4> GetBaseComposition(SEM_vertex * v);
+	array <double, 4> GetObservedCountsForVariable(SEM_vertex * v);
 	string modelSelectionCriterion;
 	string distance_measure_for_NJ = "Hamming";
 	void SetModelSelectionCriterion(string modelSelectionCriterionToSet);
@@ -2165,7 +2165,7 @@ public:
 	pair <bool, SEM_vertex *> CheckAndRetrieveHiddenVertexWithOutDegreeGreaterThanTwo();
 	pair <bool, SEM_vertex *> CheckAndRetrieveObservedVertexThatIsTheRoot();
 	pair <bool, SEM_vertex *> CheckAndRetrieveObservedVertexThatIsNotALeafAndIsNotTheRoot();
-	float GetExpectedMutualInformation(SEM_vertex * u, SEM_vertex * v);
+	double GetExpectedMutualInformation(SEM_vertex * u, SEM_vertex * v);
 	void ResetLogScalingFactors();
 	// Mutual information I(X;Y) is computed using 
 	// P(X,Y), P(X), and P(Y), which in turn are computed using
@@ -2196,8 +2196,8 @@ public:
 	void OptimizeTopologyAndParametersOfGMM();
 	int ConvertDNAtoIndex(char dna);	
 	char GetDNAfromIndex(int dna_index);			
-	float BIC;
-	float AIC;
+	double BIC;
+	double AIC;
 	void ComputeBIC();
 	void ComputeAIC();
 	void TestSEM();
@@ -2278,7 +2278,7 @@ void SEM::SetStream(ofstream& stream_to_set){
 
 void SEM::AddDuplicatedSequencesToRootedTree(MST * M) {
 	// Store dupl seq names in uniq seq vertex
-	float t;
+	double t;
 	string uniq_seq_name;
 	vector <string> dupl_seq_name_vec;
 	SEM_vertex * u;
@@ -2329,7 +2329,7 @@ void SEM::AddDuplicatedSequencesToRootedTree(MST * M) {
 
 void SEM::AddDuplicatedSequencesToUnrootedTree(MST * M) {
 	// Store dupl seq names in uniq seq vertex
-	float t;
+	double t;
 	string uniq_seq_name;
 	vector <string> dupl_seq_name_vec;
 	SEM_vertex * l;
@@ -2390,11 +2390,11 @@ void SEM::SetEdgeAndVertexLogLikelihoods() {
 		v = (*this->vertexMap)[v_id];
 		if (this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.find(u->name) == this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.end()) {
 			this->ComputeVertexLogLikelihood(u);
-			this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.insert(pair<string,float>(u->name,u->vertexLogLikelihood));
+			this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.insert(pair<string,double>(u->name,u->vertexLogLikelihood));
 		}	
 		if (this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.find(v->name) == this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.end()) {
 			this->ComputeVertexLogLikelihood(v);
-			this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.insert(pair<string,float>(v->name,v->vertexLogLikelihood));
+			this->vertexLogLikelihoodsMapToAddToGlobalPhylogeneticTree.insert(pair<string,double>(v->name,v->vertexLogLikelihood));
 		}
 		this->ComputeEdgeLogLikelihood(u,v);
 		this->ComputeEdgeLogLikelihood(v,u);
@@ -2402,8 +2402,8 @@ void SEM::SetEdgeAndVertexLogLikelihoods() {
 }
 
 void SEM::ComputeVertexLogLikelihood(SEM_vertex * v) {
-	array <float, 4> prob = this->posteriorProbabilityForVertex[v];
-	array <float, 4> Counts = this->expectedCountsForVertex[v];
+	array <double, 4> prob = this->posteriorProbabilityForVertex[v];
+	array <double, 4> Counts = this->expectedCountsForVertex[v];
 	v->vertexLogLikelihood = 0;
 	for (int i = 0; i < 4; i ++) {
 		if (prob[i] > 0) {
@@ -2417,7 +2417,7 @@ void SEM::ComputeEdgeLogLikelihood(SEM_vertex* x, SEM_vertex * y) {
 	Md P_xy = this->GetPosteriorProbabilityForVariablePair(x,y);
 	Md P_yGivenx = this->GetP_yGivenx(P_xy);
 	Md Counts = this->GetExpectedCountsForVariablePair(x,y);
-	float edgeLogLikelihood = 0;
+	double edgeLogLikelihood = 0;
 	for (int dna_x = 0; dna_x < 4; dna_x ++) {
 		for (int dna_y = 0; dna_y < 4; dna_y ++) {
 			if (P_yGivenx[dna_x][dna_y] > 0) {
@@ -2425,7 +2425,7 @@ void SEM::ComputeEdgeLogLikelihood(SEM_vertex* x, SEM_vertex * y) {
 			}
 		}
 	}
-	this->edgeLogLikelihoodsToAddToGlobalPhylogeneticTree.push_back(tuple <string, string, float>(x->name,y->name,edgeLogLikelihood));
+	this->edgeLogLikelihoodsToAddToGlobalPhylogeneticTree.push_back(tuple <string, string, double>(x->name,y->name,edgeLogLikelihood));
 }
 
 void SEM::SetWeightedEdgesToAddToGlobalPhylogeneticTree() {
@@ -2433,7 +2433,7 @@ void SEM::SetWeightedEdgesToAddToGlobalPhylogeneticTree() {
 	int u_id; int v_id;
 	SEM_vertex * u; SEM_vertex * v; 
 	string u_name; string v_name;
-	float t;	
+	double t;	
 //	cout << "Adding the following edges to the global phylogenetic tree" << endl;
 	for (pair <int, int> edge_ind : this->edgesOfInterest_ind) {
 		tie (u_id, v_id) = edge_ind;
@@ -2499,8 +2499,8 @@ void SEM::SetNumberOfInputSequences(int numOfInputSeqsToSet) {
 void SEM::ComputeBIC() {
 	this->ComputeLogLikelihood();
 	this->BIC = -2.0 * this->logLikelihood;
-	float n = this->sequenceLength;
-	float numberOfFreeParameters = this->edgesForPostOrderTreeTraversal.size();
+	double n = this->sequenceLength;
+	double numberOfFreeParameters = this->edgesForPostOrderTreeTraversal.size();
 	numberOfFreeParameters += 11.0 * (this->numberOfRateCategories);
 	bool rootHasDistinctRateCat = 1;
 	for (SEM_vertex * v : this->root->children) {
@@ -2688,7 +2688,7 @@ void SEM::ReparameterizeGMM() {
 	}
 
 	// Store transition matrices in transition_prob_hss map, store root prob in node as root_prob_hss
-	SEM_vertex * p; SEM_vertex * c; array <float,4> pi_p; array <float,4> pi_c;
+	SEM_vertex * p; SEM_vertex * c; array <double,4> pi_p; array <double,4> pi_c;
 	for (pair<SEM_vertex*, SEM_vertex*> edge : this->edgesForPreOrderTreeTraversal) {
 		p = edge.first;
 		c = edge.second;
@@ -2762,18 +2762,14 @@ void SEM::ReadProbabilities() {
                 for (int p_id = 0; p_id < 16; ++p_id) {
                     i = p_id / 4;
                     j = p_id % 4;
-                    try
-					{
-						prob = stod(splitLine[p_id]);
-						n->transitionMatrix[i][j] = prob;						
+                    try	{
+						prob = stod(splitLine[p_id]); 
 					}
-					catch(const exception& e)
-					{						
-						cout << splitLine[p_id] << '\n';
-						throw mt_error("string not converted to double");
-						
+					catch(const exception& e) {
+						prob = 0;
+						cout << "setting to 0 small prob value " << splitLine[p_id] << " not converted by stod" << endl;
 					}
-                    
+					n->transitionMatrix[i][j] = prob;
                 }
                 break;
             }
@@ -3009,7 +3005,7 @@ void SEM::RemoveEdgeLength(SEM_vertex * u, SEM_vertex * v) {
 	this->edgeLengths.erase(vertexPair);
 }
 
-void SEM::AddEdgeLength(SEM_vertex * u, SEM_vertex * v, float t) {	
+void SEM::AddEdgeLength(SEM_vertex * u, SEM_vertex * v, double t) {	
 	pair <SEM_vertex *, SEM_vertex *> vertexPair;
 	if (u->id < v->id) {
 		vertexPair = make_pair(u,v);
@@ -3019,8 +3015,8 @@ void SEM::AddEdgeLength(SEM_vertex * u, SEM_vertex * v, float t) {
 	this->edgeLengths[vertexPair] = t;
 }
 
-float SEM::GetEdgeLength(SEM_vertex * u, SEM_vertex * v) {
-	float t;
+double SEM::GetEdgeLength(SEM_vertex * u, SEM_vertex * v) {
+	double t;
 	pair <SEM_vertex *, SEM_vertex *> vertexPair;
 	if (u->id < v->id) {
 		vertexPair = make_pair(u,v);
@@ -3031,8 +3027,8 @@ float SEM::GetEdgeLength(SEM_vertex * u, SEM_vertex * v) {
 	return (t);
 }
 
-float SEM::ComputeEdgeLength(SEM_vertex * u, SEM_vertex * v) {
-	float t = 0;
+double SEM::ComputeEdgeLength(SEM_vertex * u, SEM_vertex * v) {
+	double t = 0;
 	int dna_u; int dna_v; 
 	for (int site = 0; site < this->numberOfSitePatterns; site++) {
 		dna_u = u->compressedSequence[site];
@@ -3045,7 +3041,7 @@ float SEM::ComputeEdgeLength(SEM_vertex * u, SEM_vertex * v) {
 	return (t);
 }
 
-void SEM::SetEdgeLength(SEM_vertex * u, SEM_vertex * v, float t) {
+void SEM::SetEdgeLength(SEM_vertex * u, SEM_vertex * v, double t) {
 	pair <SEM_vertex *, SEM_vertex *> vertexPair;
 	if (u->id < v->id) {
 		vertexPair = make_pair(u,v);
@@ -3060,7 +3056,7 @@ void SEM::StoreEdgeListAndSeqToAdd() {
 	this->sequencesToAddToGlobalPhylogeneticTree.clear();
 	this->weightedEdgesToAddToGlobalPhylogeneticTree.clear();
 	SEM_vertex * u; SEM_vertex * v;	
-	float t;	
+	double t;	
 	for (pair <SEM_vertex *, SEM_vertex *> vertexPair : this->edgesForPostOrderTreeTraversal) {
 		tie (u, v) = vertexPair;		
 		if (u->parent != u) {
@@ -3121,7 +3117,7 @@ Md SEM::GetTransitionMatrix(SEM_vertex * p, SEM_vertex * c) {
 //	cout << "Sequence of parent: " << EncodeAsDNA(p->compressedSequence) << endl;
 //	cout << "Sequence of child: " << EncodeAsDNA(c->compressedSequence) << endl;
 //	cout << "Count matrix is " << P << endl;
-	float rowSum;
+	double rowSum;
 	for (int i = 0; i < 4; i ++) {
 		rowSum = 0;
 		for (int j = 0; j < 4; j ++) {
@@ -3139,7 +3135,7 @@ void SEM::FitAGMModelViaHardEM() {
 	this->ClearAncestralSequences();
 	this->ComputeMPEstimateOfAncestralSequences();
 	// Iterate till convergence of logLikelihood;
-	float currentLogLikelihood = this->logLikelihood;
+	double currentLogLikelihood = this->logLikelihood;
 	int numberOfIterations = 0;
 	int maxNumberOfIters = 10;
 	bool continueEM = 1;
@@ -3181,7 +3177,7 @@ void SEM::WriteRootedTreeInNewickFormat(string newickFileName) {
 	vector <SEM_vertex *> verticesToVisit;
 	SEM_vertex * c;
 	SEM_vertex * p;	
-	float edgeLength;	
+	double edgeLength;	
 	for (pair <int, SEM_vertex *> idAndVertex : * this->vertexMap) {
 		idAndVertex.second->timesVisited = 0;
 		if (idAndVertex.second->children.size() == 0) {
@@ -3247,7 +3243,7 @@ void SEM::WriteUnrootedTreeAsEdgeList(string fileName) {
 	ofstream treeFile;
 	treeFile.open(fileName);
 	SEM_vertex * v;
-	float t;
+	double t;
 	for (pair <int, SEM_vertex *> idPtrPair : * this->vertexMap) {
 		v = idPtrPair.second;
 		for (SEM_vertex * n : v->neighbors) {
@@ -3295,7 +3291,7 @@ void SEM::WriteParametersOfGMM(string fileName) {
 void SEM::WriteRootedTreeAsEdgeList(string fileName) {
 	ofstream treeFile;
 	treeFile.open(fileName);
-	float t;
+	double t;
 	SEM_vertex * v;
 	for (pair <int, SEM_vertex *> idPtrPair : * this->vertexMap) {
 		v = idPtrPair.second;
@@ -3496,9 +3492,9 @@ void SEM::TestSEM() {
 
 void SEM::AddToExpectedCountsForEachVariable() {
 	SEM_vertex * v;
-	float siteWeight = this->sitePatternWeights[this->cliqueT->site];	
+	double siteWeight = this->sitePatternWeights[this->cliqueT->site];	
 	// Add to counts for each unobserved vertex (C->x) where C is a clique
-	array <float, 4> marginalizedProbability;
+	array <double, 4> marginalizedProbability;
 	vector <SEM_vertex *> vertexList;
 	for (clique * C: this->cliqueT->cliques) {
 		v = C->x;
@@ -3518,7 +3514,7 @@ void SEM::AddToExpectedCountsForEachVariable() {
 
 void SEM::AddToExpectedCountsForEachVariablePair() {
 	SEM_vertex * u; SEM_vertex * v;
-	float siteWeight = this->sitePatternWeights[this->cliqueT->site];	
+	double siteWeight = this->sitePatternWeights[this->cliqueT->site];	
 	pair <SEM_vertex *, SEM_vertex*> vertexPair;
 	Md countMatrixPerSite;
 	for (pair<int,SEM_vertex*> idPtrPair_1 : *this->vertexMap) {
@@ -3584,7 +3580,7 @@ Md SEM::GetPosteriorProbabilityForVariablePair(SEM_vertex * u, SEM_vertex * v) {
 }
 
 void SEM::AddToExpectedCountsForEachEdge() {
-	float siteWeight = this->sitePatternWeights[this->cliqueT->site];
+	double siteWeight = this->sitePatternWeights[this->cliqueT->site];
 	Md countMatrixPerSite;
 	pair <SEM_vertex *, SEM_vertex *> vertexPair;
 	SEM_vertex * u; SEM_vertex * v;
@@ -3606,9 +3602,9 @@ void SEM::AddToExpectedCountsForEachEdge() {
 
 void SEM::AddToExpectedCounts() {
 	SEM_vertex * u; SEM_vertex * v;
-	float siteWeight = this->sitePatternWeights[this->cliqueT->site];	
+	double siteWeight = this->sitePatternWeights[this->cliqueT->site];	
 	// Add to counts for each unobserved vertex (C->x) where C is a clique
-	array <float, 4> marginalizedProbability;
+	array <double, 4> marginalizedProbability;
 	vector <SEM_vertex *> vertexList;
 	for (clique * C: this->cliqueT->cliques) {
 		v = C->x;
@@ -3692,9 +3688,9 @@ void SEM::ComputeMAPEstimateOfAncestralSequencesUsingCliques() {
 	clique * rootClique = this->cliqueT->root;
 	SEM_vertex * v;
 	map <SEM_vertex *, int> verticesVisitedMap;
-	array <float, 4> posteriorProbability;
+	array <double, 4> posteriorProbability;
 	int maxProbState;
-	float maxProb;
+	double maxProb;
 	for (int site = 0; site < this->numberOfSitePatterns; site++) {		
 		this->cliqueT->SetSite(site);		
 		this->cliqueT->InitializePotentialAndBeliefs();		
@@ -3810,11 +3806,11 @@ void SEM::ComputeExpectedCountsForFullStructureSearch() {
 
 void SEM::ComputePosteriorProbabilitiesUsingExpectedCounts() {	
 	SEM_vertex * v;
-	float sum;
+	double sum;
 	// Compute posterior probability for vertex
 	this->posteriorProbabilityForVertex.clear();
-	array <float, 4> P_X;	
-	for (pair <SEM_vertex *, array <float, 4>> vertexAndCountArray: this->expectedCountsForVertex) {
+	array <double, 4> P_X;	
+	for (pair <SEM_vertex *, array <double, 4>> vertexAndCountArray: this->expectedCountsForVertex) {
 		v = vertexAndCountArray.first;
 		P_X = vertexAndCountArray.second;
 		sum = 0;
@@ -3824,7 +3820,7 @@ void SEM::ComputePosteriorProbabilitiesUsingExpectedCounts() {
 		for (int i = 0; i < 4; i++) {
 			P_X[i] /= sum;
 		}
-		this->posteriorProbabilityForVertex.insert(pair<SEM_vertex * , array <float, 4>>(v,P_X));
+		this->posteriorProbabilityForVertex.insert(pair<SEM_vertex * , array <double, 4>>(v,P_X));
 	}
 	// Compute posterior probability for vertex pair
 	this->posteriorProbabilityForVertexPair.clear();
@@ -3932,7 +3928,7 @@ void SEM::InitializeExpectedCountsForEachVariable() {
 	SEM_vertex * v;
 	// Initialize expected counts for each vertex
 	this->expectedCountsForVertex.clear();
-	array <float, 4> observedCounts;
+	array <double, 4> observedCounts;
 	for (pair<int, SEM_vertex *> idPtrPair : * this->vertexMap) {
 		v = idPtrPair.second;
 		for (int i = 0; i < 4; i++) {
@@ -3941,7 +3937,7 @@ void SEM::InitializeExpectedCountsForEachVariable() {
 		if (v->observed) {			
 			observedCounts = this->GetObservedCountsForVariable(v);
 		}
-		this->expectedCountsForVertex.insert(pair<SEM_vertex *, array<float,4>>(v,observedCounts));
+		this->expectedCountsForVertex.insert(pair<SEM_vertex *, array<double,4>>(v,observedCounts));
 	}	
 }
 
@@ -3996,7 +3992,7 @@ void SEM::InitializeExpectedCounts() {
 	SEM_vertex * u; SEM_vertex * v;
 	// Initialize expected counts for each vertex
 	this->expectedCountsForVertex.clear();
-	array <float, 4> observedCounts;
+	array <double, 4> observedCounts;
 	for (pair<int, SEM_vertex *> idPtrPair : * this->vertexMap) {
 		v = idPtrPair.second;
 		for (int i = 0; i < 4; i++) {
@@ -4005,7 +4001,7 @@ void SEM::InitializeExpectedCounts() {
 		if (v->observed) {			
 			observedCounts = this->GetObservedCountsForVariable(v);
 		}
-		this->expectedCountsForVertex.insert(pair<SEM_vertex *, array<float,4>>(v,observedCounts));
+		this->expectedCountsForVertex.insert(pair<SEM_vertex *, array<double,4>>(v,observedCounts));
 	}
 	
 	// Initialize expected counts for each vertex pair
@@ -4189,7 +4185,7 @@ void SEM::RestoreTransitionMatrices() {
 
 void SEM::ComputeLogLikelihoodUsingExpectedDataCompletion() {
 	this->logLikelihood = 0;
-	array <float, 4> S_r = this->expectedCountsForVertex[this->root];
+	array <double, 4> S_r = this->expectedCountsForVertex[this->root];
 	for (int dna_r = 0; dna_r < 4; dna_r ++) {
 		if (this->rootProbability[dna_r] > 0) {
 			this->logLikelihood += S_r[dna_r] * log(this->rootProbability[dna_r]);
@@ -4229,12 +4225,12 @@ void SEM::ComputeLogLikelihoodUsingExpectedDataCompletion() {
 // Case 3: Directed tree (rooted) with vertices with outdegree 2 or 0.
 void SEM::ComputeLogLikelihood() {
 	this->logLikelihood = 0;
-	map <SEM_vertex*,array<float,4>> conditionalLikelihoodMap;
-	std::array <float,4> conditionalLikelihood;
-	float partialLikelihood;
-	float siteLikelihood;	
-	float largestConditionalLikelihood = 0;
-	float currentProb;			
+	map <SEM_vertex*,array<double,4>> conditionalLikelihoodMap;
+	std::array <double,4> conditionalLikelihood;
+	double partialLikelihood;
+	double siteLikelihood;	
+	double largestConditionalLikelihood = 0;
+	double currentProb;			
 	vector <SEM_vertex *> verticesToVisit;	
 	SEM_vertex * p;
 	SEM_vertex * c;
@@ -4252,7 +4248,7 @@ void SEM::ComputeLogLikelihood() {
 					conditionalLikelihood[dna_c] = 0;
 				}
 				conditionalLikelihood[c->compressedSequence[site]] = 1;
-				conditionalLikelihoodMap.insert(pair <SEM_vertex *,array<float,4>>(c,conditionalLikelihood));
+				conditionalLikelihoodMap.insert(pair <SEM_vertex *,array<double,4>>(c,conditionalLikelihood));
 			}
 			// Initialize conditional likelihood for ancestors
 			if (conditionalLikelihoodMap.find(p) == conditionalLikelihoodMap.end()) {
@@ -4268,13 +4264,13 @@ void SEM::ComputeLogLikelihood() {
 					}
 					conditionalLikelihood[p->compressedSequence[site]] = 1;
 				}								
-				conditionalLikelihoodMap.insert(pair <SEM_vertex *,array<float,4>>(p,conditionalLikelihood));					
+				conditionalLikelihoodMap.insert(pair <SEM_vertex *,array<double,4>>(p,conditionalLikelihood));					
 			}			
 			if (conditionalLikelihoodMap.find(p) == conditionalLikelihoodMap.end()) {
 				for (unsigned char dna_c = 0; dna_c < 4; dna_c++) {
 				conditionalLikelihood[dna_c] = 1;
 				}
-				conditionalLikelihoodMap.insert(pair <SEM_vertex *,array<float,4>>(p,conditionalLikelihood));
+				conditionalLikelihoodMap.insert(pair <SEM_vertex *,array<double,4>>(p,conditionalLikelihood));
 			}
 			largestConditionalLikelihood = 0;
 			for (unsigned char dna_p = 0; dna_p < 4; dna_p++) {
@@ -4409,10 +4405,10 @@ void SEM::EM_root_search_at_each_internal_vertex_started_with_parsimony(int num_
 	int n = this->numberOfObservedVertices;
 	int num_vertices = this->vertexMap->size();	
 	SEM_vertex * v;
-	vector <float> loglikelihoodscoresForEachRepetition;
+	vector <double> loglikelihoodscoresForEachRepetition;
 	ofstream loglikelihood_node_rep_file;
 	loglikelihood_node_rep_file.open(this->prefix_for_output_files + ".rooting_initial_final_rep_loglik");
-	float max_log_likelihood = -1 * pow(10,5);
+	double max_log_likelihood = -1 * pow(10,5);
 	double logLikelihood_pars;
 	double loglikelihood_edc_first;
 	double loglikelihood_edc_final;
@@ -4474,7 +4470,7 @@ void SEM::EM_rooted_at_each_internal_vertex_started_with_SSH_par(int num_repetit
 	int n = this->numberOfObservedVertices;
 	int num_vertices = this->vertexMap->size();	
 	SEM_vertex * v;
-	vector <float> loglikelihoodscoresForEachRepetition;
+	vector <double> loglikelihoodscoresForEachRepetition;
 	ofstream loglikelihood_node_rep_file;
 	loglikelihood_node_rep_file.open(this->prefix_for_output_files + ".SSH_rooting_initial_final_rep_loglik");
     loglikelihood_node_rep_file << "root" << "\t"
@@ -4586,7 +4582,7 @@ double SEM::EM_rooted_at_each_internal_vertex_started_with_dirichlet(int num_rep
 	int n = this->numberOfObservedVertices;
 	int num_vertices = this->vertexMap->size();	
 	SEM_vertex * v;
-	vector <float> loglikelihoodscoresForEachRepetition;
+	vector <double> loglikelihoodscoresForEachRepetition;
 	ofstream loglikelihood_node_rep_file;
 	loglikelihood_node_rep_file.open(this->prefix_for_output_files + ".dirichlet_rooting_initial_final_rep_loglik");
     loglikelihood_node_rep_file << "root" << "\t"										
@@ -4654,7 +4650,7 @@ double SEM::EM_rooted_at_each_internal_vertex_started_with_parsimony(int num_rep
 	int n = this->numberOfObservedVertices;
 	int num_vertices = this->vertexMap->size();	
 	SEM_vertex * v;
-	vector <float> loglikelihoodscoresForEachRepetition;
+	vector <double> loglikelihoodscoresForEachRepetition;
 	ofstream loglikelihood_node_rep_file;
 	loglikelihood_node_rep_file.open(this->prefix_for_output_files + ".pars_rooting_initial_final_rep_loglik");
     loglikelihood_node_rep_file << "root" << "\t"										
@@ -4726,7 +4722,7 @@ void SEM::RootTreeByFittingAGMMViaEM() {
 //	cout << "10c" << endl;
 	this->ComputeInitialEstimateOfModelParameters();
 //	cout << "10d" << endl;
-//	string cliqueTreeFileNamePrefix = "/home/pk/Projects/EMtrasedForests/data/trees/cliqueTree_test_numberOfLeaves_16_replicate_1";
+//	string cliqueTreeFileNamePrefix = "/home/pk/Projects/EMTRasedForests/data/trees/cliqueTree_test_numberOfLeaves_16_replicate_1";
 //	string cliqueTreeFileName;
 	this->ClearAncestralSequences();
 	double logLikelihood_current;
@@ -5183,7 +5179,7 @@ void SEM::RootTreeByFittingUNREST() {
 void SEM::ComputeSumOfExpectedLogLikelihoods() {
 	this->sumOfExpectedLogLikelihoods = 0;
 	this->sumOfExpectedLogLikelihoods += this->root->vertexLogLikelihood;
-	float edgeLogLikelihood;	
+	double edgeLogLikelihood;	
 	for (pair <SEM_vertex *, SEM_vertex *> edge : this->edgesForPostOrderTreeTraversal) {
 		if (this->edgeLogLikelihoodsMap.find(edge) == this->edgeLogLikelihoodsMap.end()) {
 //			cout << edge.first->name << "\t" << edge.second->name << endl;
@@ -5223,12 +5219,12 @@ void SEM::ComputeMLRootedTreeForFullStructureSearch() {
 	this->StoreEdgeListForChowLiuTree();
 	// For each vertex v of the Chow-Liu tree
 	SEM_vertex * v;
-	float logLikelihood_max = 0;
+	double logLikelihood_max = 0;
 	int verticesTried = 0;
 	bool debug = 0;
 	bool useExpectedLogLikForSelectingRoot = 1;
-	string nonCanonicalRootedTreeFileName = "/home/pk/Projects/EMtrasedForests/data/trees/nonCanonicalRootedTree_test_numberOfLeaves_16_replicate_1";
-	string canonicalRootedTreeFileName = "/home/pk/Projects/EMtrasedForests/data/trees/canonicalRootedTree_test_numberOfLeaves_16_replicate_1";
+	string nonCanonicalRootedTreeFileName = "/home/pk/Projects/EMTRasedForests/data/trees/nonCanonicalRootedTree_test_numberOfLeaves_16_replicate_1";
+	string canonicalRootedTreeFileName = "/home/pk/Projects/EMTRasedForests/data/trees/canonicalRootedTree_test_numberOfLeaves_16_replicate_1";
 	for (pair <int, SEM_vertex *> idPtrPair : * this->vertexMap) {
 		verticesTried += 1;
 		// 	Root tree at v
@@ -5300,7 +5296,7 @@ void SEM::ComputeMLRootedTreeForFullStructureSearch() {
 
 Md SEM::GetP_yGivenx(Md P_xy) {
 	Md P_yGivenx = Md{};
-	array <float, 4> P_x;
+	array <double, 4> P_x;
 	for (int dna_x = 0; dna_x < 4; dna_x ++) {
 		P_x[dna_x] = 0;
 		for (int dna_y = 0; dna_y < 4; dna_y ++) {
@@ -5317,7 +5313,7 @@ Md SEM::GetP_yGivenx(Md P_xy) {
 
 
 void SEM::SetMinLengthOfEdges() {	
-	for (pair<pair<SEM_vertex * , SEM_vertex * >,float> edgeAndLengthsPair: this->edgeLengths){		
+	for (pair<pair<SEM_vertex * , SEM_vertex * >,double> edgeAndLengthsPair: this->edgeLengths){		
 		if (edgeAndLengthsPair.second < pow(10,-7)){
 			this->edgeLengths[edgeAndLengthsPair.first]  = pow(10,-7);
 		}
@@ -5439,12 +5435,12 @@ void SEM::TransformRootedTreeToBifurcatingTree() {
 	SEM_vertex * o; SEM_vertex * h_s;
 	SEM_vertex * c_1; SEM_vertex * c_2; 
 	Md P;
-	array <float, 4> rootProb_orig;
-	array <float, 4> rootProb_new;
+	array <double, 4> rootProb_orig;
+	array <double, 4> rootProb_new;
 	vector <SEM_vertex *> childrenToSwap;
 	bool checkForCanonicalForm;
 	checkForCanonicalForm = IsTreeInCanonicalForm();
-	string nonCanonicalRootedTreeFileName = "/home/pk/Projects/EMtrasedForests/data/trees/debugNonCanonicalRootedTree_before";
+	string nonCanonicalRootedTreeFileName = "/home/pk/Projects/EMTRasedForests/data/trees/debugNonCanonicalRootedTree_before";
 	this->WriteRootedTreeAsEdgeList(nonCanonicalRootedTreeFileName);
 	int numberOfTransformations = 0;
 	while (!checkForCanonicalForm) {
@@ -5640,8 +5636,8 @@ void SEM::ResetTimesVisited() {
 	}
 }
 
-array <float, 4> SEM::GetBaseComposition(SEM_vertex * v) {
-	array <float, 4> baseCompositionArray;
+array <double, 4> SEM::GetBaseComposition(SEM_vertex * v) {
+	array <double, 4> baseCompositionArray;
 	for (int dna = 0; dna < 4; dna ++) {
 		baseCompositionArray[dna] = 0;
 	}
@@ -5656,8 +5652,8 @@ array <float, 4> SEM::GetBaseComposition(SEM_vertex * v) {
 	return (baseCompositionArray);
 }
 
-array <float, 4> SEM::GetObservedCountsForVariable(SEM_vertex * v) {
-	array <float, 4> observedCounts;
+array <double, 4> SEM::GetObservedCountsForVariable(SEM_vertex * v) {
+	array <double, 4> observedCounts;
 	for (int i = 0; i < 4; i++) {
 		observedCounts[i] = 0;
  	}
@@ -5694,7 +5690,7 @@ void SEM::ComputeMLEOfTransitionMatrices() {
 
 void SEM::SetInitialEstimateOfModelParametersUsingDirichlet() {
 
-	array <float, 4> pi_diri = sample_pi();
+	array <double, 4> pi_diri = sample_pi();
 
 	this->rootProbability = pi_diri;
 	this->root->rootProbability = pi_diri;
@@ -5705,7 +5701,7 @@ void SEM::SetInitialEstimateOfModelParametersUsingDirichlet() {
 		c = edge.second;
 
 		for (int row = 0; row < 4; row++) {
-			array <float, 4> M_row_diri = sample_M_row();
+			array <double, 4> M_row_diri = sample_M_row();
 			int diri_index = 1;
 			for (int col = 0; col < 4; col++) {
 				if (row == col){
@@ -5874,15 +5870,15 @@ void SEM::ComputeMAPEstimateOfAncestralSequences() {
 		this->ClearAncestralSequences();
 	}	
 	this->logLikelihood = 0;
-	float currentProbability;
-	map <SEM_vertex*, array<float,4>> conditionalLikelihoodMap;
-	array <float,4> conditionalLikelihood;
-	float maxProbability;
-	float stateWithMaxProbability;
-	float partialLikelihood;
-	float siteLikelihood;
-	float largestConditionalLikelihood = 0;
-	float currentProb;
+	double currentProbability;
+	map <SEM_vertex*, array<double,4>> conditionalLikelihoodMap;
+	array <double,4> conditionalLikelihood;
+	double maxProbability;
+	double stateWithMaxProbability;
+	double partialLikelihood;
+	double siteLikelihood;
+	double largestConditionalLikelihood = 0;
+	double currentProb;
 	unsigned char dna_ind_p; unsigned char dna_ind_c;
 	vector <SEM_vertex *> verticesToVisit;
 	SEM_vertex * p;
@@ -5901,14 +5897,14 @@ void SEM::ComputeMAPEstimateOfAncestralSequences() {
 					conditionalLikelihood[dna_c] = 0;
 				}
 				conditionalLikelihood[c->compressedSequence[site]] = 1;
-				conditionalLikelihoodMap.insert(pair<SEM_vertex *,array<float,4>>(c,conditionalLikelihood));
+				conditionalLikelihoodMap.insert(pair<SEM_vertex *,array<double,4>>(c,conditionalLikelihood));
 			}
 			// Initialize conditional likelihood for ancestors
 			if (conditionalLikelihoodMap.find(p) == conditionalLikelihoodMap.end()){
 				for (unsigned char dna_c = 0; dna_c < 4; dna_c++){
 				conditionalLikelihood[dna_c] = 1;
 				}
-				conditionalLikelihoodMap.insert(pair<SEM_vertex *,array<float,4>>(p,conditionalLikelihood));
+				conditionalLikelihoodMap.insert(pair<SEM_vertex *,array<double,4>>(p,conditionalLikelihood));
 			}
 			largestConditionalLikelihood = 0;
 			for (unsigned char dna_p = 0; dna_p < 4; dna_p++) {
@@ -5998,7 +5994,7 @@ void SEM::ComputeMAPEstimateOfAncestralSequencesUsingHardEM() {
 	int maxIter = 10;	
 	unsigned char dna_p; unsigned char dna_c;
 	char maxProbState;
-	float rowSum;
+	double rowSum;
 	double currentProb;
 	double maxProb;	
 	bool continueEM = 1;
@@ -6154,7 +6150,7 @@ void SEM::ComputePosteriorProbabilitiesUsingMAPEstimates() {
 	Md P;
 	SEM_vertex * u;
 	SEM_vertex * v;
-	float sum;
+	double sum;
 	unsigned char dna_u; unsigned char dna_v;	
 	for (unsigned int u_id = 0; u_id < this->vertexMap->size()-1; u_id ++) {
 		u = (*this->vertexMap)[u_id];		
@@ -6186,7 +6182,7 @@ void SEM::ComputePosteriorProbabilitiesUsingMAPEstimates() {
 	}	
 }
 
-float SEM::GetExpectedMutualInformation(SEM_vertex * x, SEM_vertex* y) {
+double SEM::GetExpectedMutualInformation(SEM_vertex * x, SEM_vertex* y) {
 	pair <SEM_vertex *, SEM_vertex *> vertexPair;
 	if (x->id < y->id) {
 		vertexPair = pair <SEM_vertex *, SEM_vertex *>(x,y);
@@ -6197,8 +6193,8 @@ float SEM::GetExpectedMutualInformation(SEM_vertex * x, SEM_vertex* y) {
 	Md P = this->posteriorProbabilityForVertexPair[vertexPair];
 //	cout << "Joint probability for vertex pair " << x->name << "\t" << y->name << " is " << endl;
 //	cout << P << endl;
-	std::array <float, 4> P_x;
-	std::array <float, 4> P_y;
+	std::array <double, 4> P_x;
+	std::array <double, 4> P_y;
 	for (int dna_x = 0; dna_x < 4; dna_x ++) {
 		P_x[dna_x] = 0;
 		P_y[dna_x] = 0;
@@ -6216,8 +6212,8 @@ float SEM::GetExpectedMutualInformation(SEM_vertex * x, SEM_vertex* y) {
 //		cout << P_y[i] << "\t";
 //	}
 //	cout << endl;
-	float mutualInformation = 0;
-//	float inc;
+	double mutualInformation = 0;
+//	double inc;
 	for (int dna_x = 0; dna_x < 4; dna_x ++) {
 		for (int dna_y = 0; dna_y < 4; dna_y ++) {
 			if (P[dna_x][dna_y] > 0) {
@@ -6241,10 +6237,10 @@ void SEM::ComputeChowLiuTree() {
         }
 	}
 	const int numberOfEdges = numberOfVertices * (numberOfVertices-1)/2;	
-	float maxMutualInformation = 0;
-	float mutualInformation;
-	float * negMutualInformation;
-	negMutualInformation = new float [numberOfEdges];		
+	double maxMutualInformation = 0;
+	double mutualInformation;
+	double * negMutualInformation;
+	negMutualInformation = new double [numberOfEdges];		
 	SEM_vertex * u; SEM_vertex * v;	
 	int edgeIndex = 0;
 	for (int i=0; i<numberOfVertices; i++) {
@@ -6599,7 +6595,7 @@ void SEM::AddRootVertex() {
 void SEM::SetEdgesFromTopologyFile(){
 	SEM_vertex * u; SEM_vertex * v;
 	vector <string> splitLine;
-	string u_name; string v_name; float t;
+	string u_name; string v_name; double t;
 	t = 0.0;
 	int num_edges = 0;
 	vector <unsigned char> emptySequence;
@@ -6648,11 +6644,11 @@ void SEM::SetEdgesFromTopologyFile(){
 	cout << "number of edges in topology file is " << num_edges << endl;
 }
 
-void SEM::AddWeightedEdges(vector < tuple <string,string,float> > weightedEdgesToAdd) {
+void SEM::AddWeightedEdges(vector < tuple <string,string,double> > weightedEdgesToAdd) {
 	SEM_vertex * u; SEM_vertex * v;
-	string u_name; string v_name; float t;
+	string u_name; string v_name; double t;
 	vector <unsigned char> emptySequence;
-	for (tuple <string, string, float> weightedEdge : weightedEdgesToAdd) {
+	for (tuple <string, string, double> weightedEdge : weightedEdgesToAdd) {
 		tie (u_name, v_name, t) = weightedEdge;		
 		if (this->ContainsVertex(u_name)) {
 			u = (*this->vertexMap)[this->nameToIdMap[u_name]];
@@ -6703,22 +6699,22 @@ void SEM::AddWeightedEdges(vector < tuple <string,string,float> > weightedEdgesT
 	}
 }
 
-void SEM::AddEdgeLogLikelihoods(vector<tuple<string,string,float>> edgeLogLikelihoodsToAdd) {
-	SEM_vertex * u; SEM_vertex * v; float edgeLogLikelihood;
+void SEM::AddEdgeLogLikelihoods(vector<tuple<string,string,double>> edgeLogLikelihoodsToAdd) {
+	SEM_vertex * u; SEM_vertex * v; double edgeLogLikelihood;
 	string u_name; string v_name;
 	pair<SEM_vertex *, SEM_vertex *> vertexPair;
-	for (tuple<string,string,float> edgeLogLikelihoodTuple : edgeLogLikelihoodsToAdd) {
+	for (tuple<string,string,double> edgeLogLikelihoodTuple : edgeLogLikelihoodsToAdd) {
 		tie (u_name, v_name, edgeLogLikelihood) = edgeLogLikelihoodTuple;
 		u = (*this->vertexMap)[this->nameToIdMap[u_name]];
 		v = (*this->vertexMap)[this->nameToIdMap[v_name]];
 		vertexPair = pair <SEM_vertex *, SEM_vertex *> (u,v);
-		this->edgeLogLikelihoodsMap.insert(pair<pair <SEM_vertex *, SEM_vertex *>,float>(vertexPair, edgeLogLikelihood));
+		this->edgeLogLikelihoodsMap.insert(pair<pair <SEM_vertex *, SEM_vertex *>,double>(vertexPair, edgeLogLikelihood));
 	}	
 }
 
-void SEM::AddVertexLogLikelihoods(map<string,float> vertexLogLikelihoodsMapToAdd) {
-	string v_name; SEM_vertex * v; float vertexLogLikelihood;
-	for (pair<string,float> vNameAndLogLik : vertexLogLikelihoodsMapToAdd) {
+void SEM::AddVertexLogLikelihoods(map<string,double> vertexLogLikelihoodsMapToAdd) {
+	string v_name; SEM_vertex * v; double vertexLogLikelihood;
+	for (pair<string,double> vNameAndLogLik : vertexLogLikelihoodsMapToAdd) {
 		tie (v_name, vertexLogLikelihood) = vNameAndLogLik;
 		v = (*this->vertexMap)[this->nameToIdMap[v_name]];
 		v->vertexLogLikelihood = vertexLogLikelihood;
@@ -6733,24 +6729,24 @@ bool SEM::ContainsVertex(string v_name) {
 	}
 }
 
-float SEM::ComputeDistance(int v_i, int v_j) {
+double SEM::ComputeDistance(int v_i, int v_j) {
 	vector <unsigned char> seq_i; vector <unsigned char> seq_j;	
 	seq_i = (*this->vertexMap)[v_i]->compressedSequence;
 	seq_j = (*this->vertexMap)[v_j]->compressedSequence;
-	float sequence_length = 0;
+	double sequence_length = 0;
 	for (int site = 0; site < numberOfSitePatterns; site++) {
-		sequence_length += float(this->sitePatternWeights[site]);
+		sequence_length += double(this->sitePatternWeights[site]);
 	}
 	if(sequence_length <= 0){
         throw mt_error("Check pattern detection");
     }
 	// logDet_distance
-	float distance;	
+	double distance;	
 	if (flag_Hamming) {
 		distance = 0;
 		for (int site = 0; site < numberOfSitePatterns; site++) {
 			if (seq_i[site] != seq_j[site]) {
-			distance += float(this->sitePatternWeights[site])/sequence_length;
+			distance += double(this->sitePatternWeights[site])/sequence_length;
 			}						
 		}				
 	} else {
@@ -6761,8 +6757,8 @@ float SEM::ComputeDistance(int v_i, int v_j) {
 
 
 void SEM::ComputeNJTree() {	    
-    map<pair<int,int>, float> distanceMap;
-    map<int,float> R;
+    map<pair<int,int>, double> distanceMap;
+    map<int,double> R;
     vector<int> vertexIndsForIterating;
     vector<unsigned char> emptySequence;
 
@@ -6771,7 +6767,7 @@ void SEM::ComputeNJTree() {
         R[int(i)] = 0.0f;
         vertexIndsForIterating.push_back(int(i));
         for (unsigned int j = i + 1; j < n0; ++j) {
-            float d = this->ComputeDistance(int(i), int(j));
+            double d = this->ComputeDistance(int(i), int(j));
             if (this->verbose) {
                 	cout << "Distance measure for "
                           << (*this->vertexMap)[int(i)]->name << "\t"
@@ -6789,14 +6785,14 @@ void SEM::ComputeNJTree() {
     if (Ninit < 3) return;
 
     for (unsigned int i = 0; i < Ninit; ++i) {
-        R[int(i)] /= float(max<int>(int(Ninit) - 2, 1));
+        R[int(i)] /= double(max<int>(int(Ninit) - 2, 1));
     }
 
     int next_internal = int(Ninit);
 
     // --- Main loop ---
     while (R.size() > 3) {
-        float neighborDist = numeric_limits<float>::infinity();
+        double neighborDist = numeric_limits<double>::infinity();
         int i_selected = -1, j_selected = -1;
 
         // FIX: iterate over current vector size, not a stale n
@@ -6806,7 +6802,7 @@ void SEM::ComputeNJTree() {
                 int j = vertexIndsForIterating[jj];
                 auto it = distanceMap.find(ord_pair(i,j));
                 if (it == distanceMap.end()) continue;
-                float q = it->second - R[i] - R[j];
+                double q = it->second - R[i] - R[j];
                 if (q < neighborDist) { neighborDist = q; i_selected = i; j_selected = j; }
             }
         }
@@ -6846,13 +6842,13 @@ void SEM::ComputeNJTree() {
 
         for (int kk = 0; kk < n_active - 1; ++kk) { // all except the new node at the back
             int k = vertexIndsForIterating[kk];
-            float dik = distanceMap[ord_pair(i_selected, k)];
-            float djk = distanceMap[ord_pair(j_selected, k)];
-            float dij = distanceMap[ord_pair(i_selected, j_selected)];
-            float newDist = 0.5f * (dik + djk - dij);
+            double dik = distanceMap[ord_pair(i_selected, k)];
+            double djk = distanceMap[ord_pair(j_selected, k)];
+            double dij = distanceMap[ord_pair(i_selected, j_selected)];
+            double newDist = 0.5f * (dik + djk - dij);
 
             // Update R[k]; note: (n_active-1) leaves excluding the new one
-            R[k] = float(R[k] * (n_active - 1) - dik - djk + newDist) / float(std::max(1, n_active - 2));
+            R[k] = double(R[k] * (n_active - 1) - dik - djk + newDist) / double(std::max(1, n_active - 2));
 
             // Clean stale entries and set new distances
             distanceMap.erase(ord_pair(k, i_selected));
@@ -6863,7 +6859,7 @@ void SEM::ComputeNJTree() {
         }
 
         // Average R for new node
-        R[next_internal] /= float(std::max(1, n_active - 2));
+        R[next_internal] /= double(std::max(1, n_active - 2));
 
         // Remove i-j entry
         distanceMap.erase(ord_pair(i_selected, j_selected));
@@ -6885,12 +6881,12 @@ void SEM::ComputeNJTree() {
 
 void SEM::ComputeNJTree_may_contain_uninitialized_values() {
 	
-	map <pair <int,int>, float> distanceMap;
-	map <int,float> R;
+	map <pair <int,int>, double> distanceMap;
+	map <int,double> R;
 	vector <int> vertexIndsForIterating;
 	vector <unsigned char> emptySequence;
 	unsigned int n = this->numberOfObservedVertices;			
-	float distance;		
+	double distance;		
 	for (unsigned int i = 0; i < n; i++) {
 		R[i] = 0.0;
 		vertexIndsForIterating.push_back(i);			
@@ -6907,15 +6903,15 @@ void SEM::ComputeNJTree_may_contain_uninitialized_values() {
 
 	// NJ algorithm
 	for (unsigned int i = 0; i < n; i++){R[i] /= (n-2);}
-	float neighborDist;
-	float neighborDist_current;
-	float newDist;
+	double neighborDist;
+	double neighborDist_current;
+	double newDist;
 	int i; int j; int k;
 	int i_selected; int j_selected;
 	int h = n;
 	
 	while (R.size() > 3) {
-		neighborDist = numeric_limits<float>::infinity();
+		neighborDist = numeric_limits<double>::infinity();
 		i_selected = j_selected = -1;
 
         for (unsigned int i_ind = 0; i_ind < n; i_ind++) {
@@ -6955,28 +6951,28 @@ void SEM::ComputeNJTree_may_contain_uninitialized_values() {
 				newDist = distanceMap[pair<int,int>(k,i_selected)] + distanceMap[pair<int,int>(k,j_selected)];
                 newDist -= distanceMap[pair<int,int>(i_selected,j_selected)];
                 newDist *= 0.5;
-                R[k] = float(R[k]*(n-1)-distanceMap[pair<int,int>(k,i_selected)]-distanceMap[pair<int,int>(k,j_selected)] + newDist)/float(n-2);
+                R[k] = double(R[k]*(n-1)-distanceMap[pair<int,int>(k,i_selected)]-distanceMap[pair<int,int>(k,j_selected)] + newDist)/double(n-2);
                 distanceMap.erase(pair<int,int>(k,i_selected));
 				distanceMap.erase(pair<int,int>(k,j_selected));               
 			} else if (j_selected < k) {
 				newDist = distanceMap[pair<int,int>(i_selected,k)] + distanceMap[pair<int,int>(j_selected,k)];
                 newDist -= distanceMap[pair<int,int>(i_selected,j_selected)];
                 newDist *= 0.5;
-                R[k] = float(R[k]*(n-1)-distanceMap[pair<int,int>(i_selected,k)]-distanceMap[pair<int,int>(j_selected,k)] + newDist)/float(n-2);
+                R[k] = double(R[k]*(n-1)-distanceMap[pair<int,int>(i_selected,k)]-distanceMap[pair<int,int>(j_selected,k)] + newDist)/double(n-2);
                 distanceMap.erase(pair<int,int>(i_selected,k));
                 distanceMap.erase(pair<int,int>(j_selected,k));
 			} else {
 			    newDist = distanceMap[pair<int,int>(i_selected,k)] + distanceMap[pair<int,int>(k,j_selected)];
                 newDist -= distanceMap[pair<int,int>(i_selected,j_selected)];
                 newDist *= 0.5;
-                R[k] = float(R[k]*(n-1)-distanceMap[pair<int,int>(i_selected,k)]-distanceMap[pair<int,int>(k,j_selected)] + newDist)/float(n-2);
+                R[k] = double(R[k]*(n-1)-distanceMap[pair<int,int>(i_selected,k)]-distanceMap[pair<int,int>(k,j_selected)] + newDist)/double(n-2);
                 distanceMap.erase(pair<int,int>(i_selected,k));
                 distanceMap.erase(pair<int,int>(k,j_selected));
 			}            
 			distanceMap[pair<int,int>(k,h)] = newDist;
             R[h] += newDist;
 		}
-        R[h] /= float(n-2);
+        R[h] /= double(n-2);
 		h += 1;
         distanceMap.erase(pair<int,int>(i_selected,j_selected));
 	}
@@ -6993,7 +6989,7 @@ void SEM::ComputeNJTree_may_contain_uninitialized_values() {
 
 ///...///...///...///...///...///...///... mst backbone manager ///...///...///...///...///...///...///...///...///
 
-class EMtr
+class EMTR
 {
 private:
 	default_random_engine generator;
@@ -7061,23 +7057,23 @@ private:
 public:
 	void SetDNAMap();
 	void SetThresholds();
-	void EMtrackboneWithOneExternalVertex();
-	void EMtrackbone_k2020_preprint();
+	void EMTRackboneWithOneExternalVertex();
+	void EMTRackbone_k2020_preprint();
 	void EMgivenInputTopology();
 	void RootSuperTree();
 	void start_EMt_with_MPars(int num_repetitions);
 	void start_EMt_with_SSH_pars(int num_repetitions);
-	void EMtrackboneWithRootSEMAndMultipleExternalVertices();
-	void EMtrackboneOverlappingSets();
-	void EMtrackboneOnlyLocalPhylo();
+	void EMTRackboneWithRootSEMAndMultipleExternalVertices();
+	void EMTRackboneOverlappingSets();
+	void EMTRackboneOnlyLocalPhylo();
 	void main(string init_criterion, bool root_search);
-    void EMpars();
-	void EMnoise();
+    void EMparsimony();
+	void EMdirichlet();
 	void SetprobFileforSSH();
     void EMssh();
 	string EncodeAsDNA(vector<unsigned char> sequence);
 	vector<unsigned char> DecompressSequence(vector<unsigned char>* compressedSequence, vector<vector<int>>* sitePatternRepeats);
-	EMtr(string sequenceFileNameToSet, string input_format, string topologyFileNameToSet, string prefix_for_output_files, int num_repetitions, int max_iter, double conv_threshold) {	
+	EMTR(string sequenceFileNameToSet, string input_format, string topologyFileNameToSet, string prefix_for_output_files, int num_repetitions, int max_iter, double conv_threshold) {	
 		// start_time = chrono::high_resolution_clock::now();
 		this->prefix_for_output_files = prefix_for_output_files;
 		this->emt_logFile.open(this->prefix_for_output_files + ".emt_log");
@@ -7127,18 +7123,18 @@ public:
 		this->P->SetVertexVector();
         this->P->SetPrefixForOutputFiles(this->prefix_for_output_files);
 			}
-	~EMtr(){
+	~EMTR(){
 		delete this->P;
 		delete this->M;	
 	}
 };
 
-void EMtr::main(string init_criterion, bool root_search){
+void EMTR::main(string init_criterion, bool root_search){
 	this->P->init_criterion = init_criterion;
 	this->P->root_search = root_search;	
 }
 
-void EMtr::EMpars() {
+void EMTR::EMparsimony() {
     cout << "Starting EM with initial parameters set using parsimony" << endl;
 	this->P->probabilityFileName_pars = this->prefix_for_output_files + ".pars_prob";
 	this->probabilityFileName_pars = this->prefix_for_output_files + ".pars_prob";
@@ -7146,14 +7142,14 @@ void EMtr::EMpars() {
 }
 
 
-void EMtr::EMnoise() {
+void EMTR::EMdirichlet() {
 	cout << "Starting EM with initial parameters sampled from Dirichlet distribution" << endl;
 	this->P->probabilityFileName_diri = this->prefix_for_output_files + ".diri_prob";
 	this->probabilityFileName_diri = this->prefix_for_output_files + ".diri_prob";
 	this->max_log_lik_diri = this->P->EM_rooted_at_each_internal_vertex_started_with_dirichlet(this->num_repetitions);
 }
 
-void EMtr::SetprobFileforSSH() {
+void EMTR::SetprobFileforSSH() {
 	if (this->max_log_lik_pars > this->max_log_lik_diri) {
 		cout << "Initializing with Parsimony yielded higher log likelihood score" << endl;
 		this->probabilityFileName_best = this->probabilityFileName_pars;
@@ -7163,7 +7159,7 @@ void EMtr::SetprobFileforSSH() {
 	}
 }
 
-void EMtr::EMssh() {
+void EMTR::EMssh() {
 	this->SetprobFileforSSH();
 	cout << "Starting EM with initial parameters set using Bayes rule as described in SSH paper" << endl;
 	this->P->probabilityFileName_best = this->probabilityFileName_best;
@@ -7173,14 +7169,14 @@ void EMtr::EMssh() {
     this->P->EM_rooted_at_each_internal_vertex_started_with_SSH_par(this->num_repetitions);
 }
 
-void EMtr::SetDNAMap() {
+void EMTR::SetDNAMap() {
 	this->mapDNAtoInteger["A"] = 0;
 	this->mapDNAtoInteger["C"] = 1;
 	this->mapDNAtoInteger["G"] = 2;
 	this->mapDNAtoInteger["T"] = 3;
 }
 
-void EMtr::EMtrackboneOnlyLocalPhylo() {
+void EMTR::EMTRackboneOnlyLocalPhylo() {
 	vector <string> names;
 	vector <vector <unsigned char> > sequences;
 	vector <int> sitePatternWeights;
@@ -7259,7 +7255,7 @@ void EMtr::EMtrackboneOnlyLocalPhylo() {
 				//  6.	If no then double subtree size and go to step 2 	 //
 				//		else reset subtree size and go to to step 7		     //
 				//----####################################################---//		
-				this->M->DoubleSubtreeSizeThreshold();
+				this->M->doubleSubtreeSizeThreshold();
 				// cout << "6. Doubling subtree size" << endl;
 			} else {
 				this->M->ResetSubtreeSizeThreshold();		
@@ -7335,7 +7331,7 @@ void EMtr::EMtrackboneOnlyLocalPhylo() {
 }
 
 
-void EMtr::EMtrackbone_k2020_preprint() {
+void EMTR::EMTRackbone_k2020_preprint() {
 	vector <string> names;
 	vector <vector <unsigned char> > sequences;
 	vector <int> sitePatternWeights;
@@ -7433,7 +7429,7 @@ void EMtr::EMtrackbone_k2020_preprint() {
 				//  6.	If no then double subtree size and go to step 2 	 //
 				//		else reset subtree size and go to to step 7		     //
 				//----####################################################---//		
-				this->M->DoubleSubtreeSizeThreshold();
+				this->M->doubleSubtreeSizeThreshold();
 				// cout << "6. Doubling subtree size" << endl;
 			} else {
 				this->M->ResetSubtreeSizeThreshold();		
@@ -7501,14 +7497,14 @@ void EMtr::EMtrackbone_k2020_preprint() {
 	this->P->WriteRootedTreeInNewickFormat(this->prefix_for_output_files + ".unrooted_newick");	
 }
 
-void EMtr::start_EMt_with_SSH_pars(int num_repetitions) {
+void EMTR::start_EMt_with_SSH_pars(int num_repetitions) {
 	this->P->EM_rooted_at_each_internal_vertex_started_with_SSH_par(num_repetitions);	
 }
 
-void EMtr::start_EMt_with_MPars(int num_repetitions){
+void EMTR::start_EMt_with_MPars(int num_repetitions){
 	this->P->EM_rooted_at_each_internal_vertex_started_with_parsimony(num_repetitions);	
 }
-void EMtr::EMtrackboneWithRootSEMAndMultipleExternalVertices() {
+void EMTR::EMTRackboneWithRootSEMAndMultipleExternalVertices() {
 	vector <string> names;
 	vector <vector <unsigned char> > sequences;
 	vector <int> sitePatternWeights;
@@ -7603,7 +7599,7 @@ void EMtr::EMtrackboneWithRootSEMAndMultipleExternalVertices() {
 				//  6.	If no then double subtree size and go to step 2 	 //
 				//		else reset subtree size and go to to step 7		     //
 				//----####################################################---//		
-				this->M->DoubleSubtreeSizeThreshold();
+				this->M->doubleSubtreeSizeThreshold();
 				// cout << "6. Doubling subtree size" << endl;
 			} else {
 				this->M->ResetSubtreeSizeThreshold();		
@@ -7687,7 +7683,7 @@ void EMtr::EMtrackboneWithRootSEMAndMultipleExternalVertices() {
 }
 
 
-void EMtr::EMtrackboneWithOneExternalVertex() {
+void EMTR::EMTRackboneWithOneExternalVertex() {
 	this->P = new SEM(1,this->conv_thresh,this->max_EM_iter,this->verbose);
 	cout << "Starting MST-backbone" << endl;
 	bool subtreeExtractionPossible = 1;		
@@ -7788,7 +7784,7 @@ void EMtr::EMtrackboneWithOneExternalVertex() {
 	delete this->p;	
 }
 
-void EMtr::EMgivenInputTopology(){
+void EMTR::EMgivenInputTopology(){
 	vector <string> names;
 	vector <vector <unsigned char> > sequences;
 	vector <int> sitePatternWeights;
@@ -7815,7 +7811,7 @@ void EMtr::EMgivenInputTopology(){
 	this->P->SetEdgesFromTopologyFile();
 }
 
-vector<unsigned char> EMtr::DecompressSequence(vector<unsigned char>* compressedSequence, vector<vector<int>>* sitePatternRepeats){
+vector<unsigned char> EMTR::DecompressSequence(vector<unsigned char>* compressedSequence, vector<vector<int>>* sitePatternRepeats){
 	int totalSequenceLength = 0;
 	for (vector<int> sitePatternRepeat: *sitePatternRepeats){
 		totalSequenceLength += int(sitePatternRepeat.size());
@@ -7834,7 +7830,7 @@ vector<unsigned char> EMtr::DecompressSequence(vector<unsigned char>* compressed
 	return (decompressedSequence);	
 }
 
-string EMtr::EncodeAsDNA(vector<unsigned char> sequence){
+string EMTR::EncodeAsDNA(vector<unsigned char> sequence){
 	string allDNA = "AGTC";
 	string dnaSequence = "";
 	for (unsigned char s : sequence){
@@ -7843,7 +7839,7 @@ string EMtr::EncodeAsDNA(vector<unsigned char> sequence){
 	return dnaSequence;
 }
 
-string EMtr::GetSequenceListToWriteToFile(map <string, vector <unsigned char>> compressedSeqMap, vector <vector <int> > sitePatternRepetitions) {	
+string EMTR::GetSequenceListToWriteToFile(map <string, vector <unsigned char>> compressedSeqMap, vector <vector <int> > sitePatternRepetitions) {	
 	vector <unsigned char> decompressedSequence;
 	string dnaSequence;
 	string u_name;
@@ -7856,7 +7852,7 @@ string EMtr::GetSequenceListToWriteToFile(map <string, vector <unsigned char>> c
 	return (listOfVertexNamesAndDNAsequencesToWriteToFile);
 }
 
-int EMtr::GetEdgeIndex (int vertexIndex1, int vertexIndex2, int numberOfVertices){
+int EMTR::GetEdgeIndex (int vertexIndex1, int vertexIndex2, int numberOfVertices){
 	int edgeIndex;
 	edgeIndex = numberOfVertices*(numberOfVertices-1)/2;
 	edgeIndex -= (numberOfVertices-vertexIndex1)*(numberOfVertices-vertexIndex1-1)/2;
@@ -7864,7 +7860,7 @@ int EMtr::GetEdgeIndex (int vertexIndex1, int vertexIndex2, int numberOfVertices
 	return edgeIndex;
 }
 
-int EMtr::ComputeHammingDistance(string seq1, string seq2) {
+int EMTR::ComputeHammingDistance(string seq1, string seq2) {
 	int hammingDistance = 0;
 	for (unsigned int i=0;i<seq1.length();i++){
 		if (seq1[i] != seq2[i]){
@@ -7874,9 +7870,9 @@ int EMtr::ComputeHammingDistance(string seq1, string seq2) {
 	return (hammingDistance);
 };
 
-int EMtr::ComputeHammingDistance(vector<unsigned char> recodedSeq1, vector<unsigned char> recodedSeq2) {
+int EMTR::ComputeHammingDistance(vector<unsigned char> recodedSeq1, vector<unsigned char> recodedSeq2) {
 	int hammingDistance = 0;
-	float ungappedSequenceLength = 0;
+	double ungappedSequenceLength = 0;
 	for (unsigned int i=0;i<recodedSeq1.size();i++) {
 		if (recodedSeq1[i] != recodedSeq2[i]) {
 			hammingDistance+=1;
@@ -7885,10 +7881,10 @@ int EMtr::ComputeHammingDistance(vector<unsigned char> recodedSeq1, vector<unsig
 	return (hammingDistance);
 };
 
-PYBIND11_MODULE(EMtr, m) {
-    m.doc() = "pybind11 bindings for EMtr";
+PYBIND11_MODULE(emtr, m) {
+    m.doc() = "pybind11 bindings for EMTR";
     m.def("ord_pair", &ord_pair);
-    py::class_<EMtr>(m, "EMtr")
+    py::class_<EMTR>(m, "EMTR")
         .def(py::init<
                  string,  // sequence_file
                  string,  // seq_file_format
@@ -7906,8 +7902,8 @@ PYBIND11_MODULE(EMtr, m) {
              py::arg("max_iter"),
              py::arg("conv_threshold")
              )
-        .def("EMpars", &EMtr::EMpars)      
-		.def("EMnoise", &EMtr::EMnoise)
-        .def("EMssh", &EMtr::EMssh);
+        .def("EMparsimony", &EMTR::EMparsimony)      
+		.def("EMdirichlet", &EMTR::EMdirichlet)
+        .def("EMssh", &EMTR::EMssh);
     py::register_exception<mt_error>(m, "mt_error");
 }

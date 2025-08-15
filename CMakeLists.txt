@@ -9,8 +9,6 @@ find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(emtr src/emtr.cpp)
 
-# set_target_properties(flower_core PROPERTIES OUTPUT_NAME "_core")
-
 # Install into the Python package directory
 install(TARGETS emtr
         LIBRARY DESTINATION .
