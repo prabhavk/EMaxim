@@ -72,6 +72,9 @@
         "__split_buffer": "cpp",
         "__tree": "cpp",
         "filesystem": "cpp",
-        "ios": "cpp"
+        "ios": "cpp",
+        "__tuple": "cpp",
+        "__locale": "cpp",
+        "__bit_reference": "cpp"
     }
 }

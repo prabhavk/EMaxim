@@ -3,7 +3,7 @@ requires = ["scikit-build-core>=0.11", "pybind11>=2.11"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "emaxim"
+name = "emtr"
 version = "0.1.0"
 description = "Visualizing EM results for the Randall experimental phylogeny"
 readme = { text = "C++ core via pybind11 plus matplotlib flower plot.", content-type = "text/markdown" }
